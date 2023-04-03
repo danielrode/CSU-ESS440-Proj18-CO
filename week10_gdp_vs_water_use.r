@@ -368,10 +368,10 @@ plot =
         title = "Year"
       ),
       yaxis = list(
-        title = "GDP (USD)"
+        title = "Water Withdrawals (gal/day)"
       ),
       yaxis2 = list(
-        title = "Water Withdrawals (gal/day)",
+        title = "GDP (USD)",
         overlaying = "y",
         side = "right"
       ),
