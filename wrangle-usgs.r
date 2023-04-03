@@ -82,53 +82,28 @@ cols = c(
   # IR = irrigation
   # HY = hydroelectric power
   # INPT = other industrial and thermoelectric
-  # "DO-SSCUsFr;self-supplied consumptive use, fresh, in Mgal/d",
-  "DO-WGWFr;self-supplied groundwater withdrawals, fresh, in Mgal/d",
-  "DO-WSWFr;self-supplied surface-water withdrawals, fresh, in Mgal/d",
-  # "HY-InUse;instream water use, in Mgal/d",
-  # "INPT-RecWW;reclaimed wastewater, in Mgal/d",  # NOTE: Industrial and Thermoelectric were combined in 1955
+  #
+  # I chose these columns (the uncommented ones below) so that sums would
+  # match the ones that show up on
+  # https://labs.waterdata.usgs.gov/visualizations/water-use/index.html
+  #
+  # "DO-WGWFr;self-supplied groundwater withdrawals, fresh, in Mgal/d",
+  # "DO-WSWFr;self-supplied surface-water withdrawals, fresh, in Mgal/d",
   "INPT-WGWFr;self-supplied groundwater withdrawals, fresh, in Mgal/d",
-  # "INPT-WGWSa;self-supplied groundwater withdrawals, saline, in Mgal/d",
   "INPT-WSWFr;self-supplied surface-water withdrawals, fresh, in Mgal/d",
-  # "INPT-WSWSa;self-supplied surface-water withdrawals, saline, in Mgal/d",  # NOTE: Industrial and Thermoelectric were combined in 1950
-  # "IR-CLoss;conveyance loss, in Mgal/d",
-  # "IR-CUsFr;consumptive use, fresh, in Mgal/d",
-  # "IR-DelFmTot;total water delivered to farms, in Mgal/d",
-  # "IR-IrTot;total irrigation, in thousand acres",
-  # "IR-RecWW;reclaimed wastewater, in Mgal/d",
-  "IR-WFrTo; total self-supplied withdrawals, fresh, in Mgal/d  (Total Delivered to farms + Conveyance Losses) [see ReadMe tab]",
+  "IR-WFrTo; total self-supplied withdrawals, fresh, in Mgal/d  (Total Delivered to farms + Conveyance Losses) [see ReadMe tab]",  # Included because 1960 tracked things weird (it is the only year that uses this column)
   "IR-WGWFr;self-supplied groundwater withdrawals, fresh, in Mgal/d",
   "IR-WSWFr;self-supplied surface-water withdrawals, fresh, in Mgal/d",
-  # "LS-CUsFr;consumptive use, fresh, in Mgal/d",
-  "LS-WGWFr;self-supplied groundwater withdrawals, fresh, in Mgal/d",
-  "LS-WSWFr;self-supplied surface-water withdrawals, fresh, in Mgal/d",
-  # "OI-RecWW;reclaimed wastewater, in Mgal/d",
-  # "OI-SSCUTot;total consumptive use, in Mgal/d",
-  # "OI-SSCUsFr;total consumptive use fresh, in Mgal/d",
-  # "OI-SSCUsFr;total consumptive use, in Mgal/d",
-  # "OI-SSCUsSa",
-  # "OI-SSCUsSa;total consumptive use saline, in Mgal/d",
+  # "LS-WGWFr;self-supplied groundwater withdrawals, fresh, in Mgal/d",
+  # "LS-WSWFr;self-supplied surface-water withdrawals, fresh, in Mgal/d",
   "OI-WGWFr;self-supplied groundwater withdrawals, fresh, in Mgal/d",
-  # "OI-WGWSa;self-supplied groundwater withdrawals, saline, in Mgal/d",
   "OI-WSWFr;self-supplied surface-water withdrawals, fresh, in Mgal/d",
-  # "OI-WSWSa;self-supplied surface-water withdrawals, saline, in Mgal/d",
-  # "PS-CUFr;consumptive use, fresh, in Mgal/d",
-  "PS-DelCI;deliveries to commercial and other industrial, in Mgal/d",
-  "PS-DelDP;deliveries to domestic and public use and losses, in Mgal/d",
-  # "PS-GWPop;population served by groundwater, in thousands",
-  # "PS-SWPop;population served by surface water, in thousands",
+  # "PS-DelCI;deliveries to commercial and other industrial, in Mgal/d",
+  # "PS-DelDP;deliveries to domestic and public use and losses, in Mgal/d",
   "PS-WGWFr;self-supplied groundwater withdrawals, fresh, in Mgal/d",
   "PS-WSWFr;self-supplied surface-water withdrawals, fresh, in Mgal/d",
-  # "PT-SSCUTot;total consumptive use, in Mgal/d",
-  # "PT-SSCUsFr",  # Total Thermoelectric Power, consumptive use, fresh, in Mgal/d
-  # "PT-SSCUsFr;self-supplied surface-water withdrawals, saline, in Mgal/d",
-  # "PT-SSCUsSa",  # Total Thermoelectric Power, consumptive use, saline, in Mgal/d
-  # "PT-SSCUsSa;total consumptive use, in Mgal/d",
   "PT-WGWFr;self-supplied groundwater withdrawals, fresh, in Mgal/d",
-  # "PT-WGWSa;self-supplied groundwater withdrawals, saline, in Mgal/d",
   "PT-WSWFr;self-supplied surface-water withdrawals, fresh, in Mgal/d"
-  # "PT-WSWSa;self-supplied surface-water withdrawals, saline, in Mgal/d",
-  # "TP-TotPop;total population of area, in thousands",
 )
 
 dataDirUSGSOld = paste(
