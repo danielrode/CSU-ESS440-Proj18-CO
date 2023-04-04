@@ -1,2 +1,0 @@
-
-- Y-axis should say $ instead of GDP (maybe?) (is GDP a unit of measure?)
