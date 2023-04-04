@@ -3,23 +3,13 @@
 ########################################
 
 
-# TODO, remove library imports for unused packages
-library(stringr)
-library(plyr)
-library(readr)
-library(ggplot2)
-library(GGally)
-library(dplyr)
-library(mlbench)
-library(ggcorrplot)
+library(tidyverse)
 library(plotly)
-library(htmlwidgets)
-library(tibble)
-library(trend)
-library(tidyr)
-library(zoo)
 library(readxl)
-library(tidyxl)
+
+
+# Import my project functions and variables
+source("library.r")
 
 
 # Variables

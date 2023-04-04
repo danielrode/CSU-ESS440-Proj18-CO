@@ -9,17 +9,9 @@
 
 
 
-library(stringr)
-library(plyr)
-library(readr)
-library(ggplot2)
-library(GGally)
-library(dplyr)
-library(mlbench)
-library(ggcorrplot)
+library(tidyverse)
 library(plotly)
 library(htmlwidgets)
-library(tibble)
 library(trend)
 
 

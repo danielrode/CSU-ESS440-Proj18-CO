@@ -3,9 +3,6 @@
 #######################################################
 
 
-library(tidyverse)
-
-
 # Variables
 HOME = Sys.glob('~')
 dataDir = paste(HOME, "downloads/ess440/data", sep="/")
