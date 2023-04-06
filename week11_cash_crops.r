@@ -17,6 +17,7 @@ library(tidyverse)
 library(plotly)
 library(htmlwidgets)
 library(readxl)
+library(trend)
 
 
 # Import my project functions and variables
@@ -25,6 +26,123 @@ source("library.r")
 
 # Import and subset USGS water use data
 source("wrangle-usgs.r")
+
+
+# Functions
+report = function(df, x, y) {
+  # Test whether x is related to y, and print results
+  # Note: x and y must be strings (names of the columns rather than the column
+  # objects themselves).
+
+  # Test for correlation, and print test's p-value
+  correlation = cor.test(df[[x]], df[[y]])
+  cat(paste(
+    paste0("`", x, "`"), "<-->", paste0("`", y, "`"),
+    "correlation p-value:", correlation$p.value),
+    "\n")
+
+  # Test for correlation, and print test's r^2
+  formula = as.formula(paste0('`', x, '`~`', y, '`'))
+  model = lm(formula, data = df)  # linear regression
+  cat(paste(
+    paste0("`", x, "`"), "<-->", paste0("`", y, "`"),
+    "correlation adjusted r^2:", summary(model)$adj.r.squared),
+    "\n")
+
+  # Test for trend in x and y (independantly), and print results
+  for (i in c(x, y)) {
+    result = mk.test(df[[i]])
+    cat(paste(
+      paste0("`", i, "`"),
+      "Mann-Kendall trend test statistic:", result$statistic),
+      "\n")
+    cat(paste(
+      paste0("`", i, "`"),
+      "Mann-Kendall trend test p-value:", result$p.value),
+      "\n")
+  }
+}
+
+plot_wateruse_vs = function(df, y2, y2_label) {
+  plot = 
+    plot_ly(df) |>  # , width = 1200) |>
+      # Plot water use
+      add_trace(
+        x = ~year,
+        y = ~withdrawalSum,
+        type = "bar",
+        marker = list(color = "lightskyblue"),
+        width = 3,
+        # `name` sets legend label for this item
+        name = "Water Withdrawals")
+  
+  # Plot other variables
+  for (i in y2) {
+    plot = add_trace(
+      plot,
+      x = df[["year"]],
+      y = df[[i]],
+      type = "scatter", mode = "lines",
+      line = list(width = 5),
+      yaxis = "y2",
+      name = i)
+  }
+
+  # Configure aesthetic
+  plot = layout(
+    plot,
+    font = list(size=18),
+    xaxis = list(
+      title = "Year"
+    ),
+    yaxis = list(
+      title = "Water Withdrawals (gal/day)"
+    ),
+    yaxis2 = list(
+      title = y2_label,
+      overlaying = "y",
+      side = "right"
+    ),
+    legend = list(x = 1.2))  # fix legend position to prevent y2-axis overlap
+
+  # Show plot
+  tmp_plot_path = paste0(tmp_dir_path, "/plotly_ccvswateruse_plot.html")
+  saveWidget(plot, file = tmp_plot_path)  # save plot
+  system(paste("firefox", tmp_plot_path))  # show plot
+}
+
+plot_x_vs_y = function(df, x, y) {
+  # Calculate linear best fit line
+  formula = as.formula(paste0('`', y, '`~`', x, '`'))
+  model = lm(formula, data = df)  # linear regression
+
+  # Draw plot
+  plot =
+    plot_ly(df) |>
+      add_trace(
+        x = ~df[[x]],
+        y = ~df[[y]],
+        type = "scatter", mode = "markers") |>
+      add_lines(
+        x = ~df[[x]],
+        y = fitted(model),
+        line = list(dash="solid", width = 1.1, color="red")
+      ) |>
+      layout(
+        font = list(size=24),
+        showlegend = F,
+        xaxis = list(
+          title = x
+        ),
+        yaxis = list(
+          title = y
+        )
+      )
+  
+  # Show plot
+  saveWidget(plot, file = "./tmp_plot2.html")  # save plot
+  system(paste("firefox", "./tmp_plot2.html"))  # show plot
+}
 
 
 # Import BEA GDP data
@@ -145,46 +263,40 @@ pairs = list(
 for (i in 1:length(pairs)) {
   a = pairs[[i]][1]
   b = pairs[[i]][2]
-  print(a)
-  print(b)
-
-  correlation = cor.test(df[[a]], df[[b]])
-  print(correlation)
-
-  formula = as.formula(paste0('`', a, '`~`', b, '`'))
-  model = lm(formula, data = df)  # linear regression
-  print(summary(model))
+  report(df, a, b)
 }
 
 
-# Look for trends
-# mk.test(df$gdpCurrentDollars)
-# mk.test(df$withdrawalSum)
+# Plot - Visually inspect relationship between water use and cash crops
+cols = list(
+  "Value of agricultural sector production",
+  "Net farm income")
+plot_wateruse_vs(
+  df,
+  cols,
+  y2_label = "$ (USD)")
 
 
 # Plot - Visually inspect relationship between GDP and cash crops
 plot = 
   plot_ly(df) |>  # , width = 1200) |>
     add_trace(
-      x = ~year,
+      x = ~df[["year"]],
       y = ~gdpCurrentDollars,
       type = "scatter", mode = "lines",
       line = list(width = 5),
-      yaxis = "y2",
       name = "GDP") |>
     add_trace(
       x = ~year,
       y = ~`Value of agricultural sector production`,
       type = "scatter", mode = "lines",
       line = list(width = 5),
-      yaxis = "y2",
       name = "Value of Ag Sector Prod.") |>
     add_trace(
       x = ~year,
       y = ~`Net farm income`,
       type = "scatter", mode = "lines",
       line = list(width = 5),
-      yaxis = "y2",
       name = "Net Farm Income") |>
     layout(
       font = list(size=18),
@@ -200,76 +312,4 @@ plot =
 tmp_plot_path = paste0(tmp_dir_path, "/plotly_gdpvscc_plot.html")
 saveWidget(plot, file = tmp_plot_path)  # save plot
 system(paste("firefox", tmp_plot_path))  # show plot
-
-
-# Plot - Visually inspect relationship between water use and cash crops
-plot = 
-  plot_ly(df) |>  # , width = 1200) |>
-    add_trace(
-      x = ~year,
-      y = ~withdrawalSum,
-      type = "bar",
-      marker = list(color = "lightskyblue"),
-      width = 3,
-      # `name` sets legend label for this item
-      name = "Water Withdrawals") |>
-    add_trace(
-      x = ~year,
-      y = ~`Value of agricultural sector production`,
-      type = "scatter", mode = "lines",
-      line = list(width = 5),
-      yaxis = "y2",
-      name = "Value of Ag Sector Prod.") |>
-    add_trace(
-      x = ~year,
-      y = ~`Net farm income`,
-      type = "scatter", mode = "lines",
-      line = list(width = 5),
-      yaxis = "y2",
-      name = "Net Farm Income") |>
-    layout(
-      font = list(size=18),
-      xaxis = list(
-        title = "Year"
-      ),
-      yaxis = list(
-        title = "Water Withdrawals (gal/day)"
-      ),
-      yaxis2 = list(
-        title = "$ (USD)",
-        overlaying = "y",
-        side = "right"
-      ),
-      legend = list(x = 1.2)  # fix legend position to prevent y2-axis overlap
-    )
-
-tmp_plot_path = paste0(tmp_dir_path, "/plotly_ccvswateruse_plot.html")
-saveWidget(plot, file = tmp_plot_path)  # save plot
-system(paste("firefox", tmp_plot_path))  # show plot
-
-
-# plot =
-#   plot_ly(df) |>
-#     add_trace(
-#       x = ~gdpCurrentDollars,
-#       y = ~withdrawalSum
-#     ) |>
-#     add_lines(
-#       x = ~gdpCurrentDollars,
-#       y = fitted(model),
-#       line = list(dash="solid", width = 1.1, color="red")
-#     ) |>
-#     layout(
-#       font = list(size=24),
-#       showlegend = F,
-#       xaxis = list(
-#         title = "GDP (USD)"
-#       ),
-#       yaxis = list(
-#         title = "Water Withdrawals (gal/day)"
-#       )
-#     )
-
-# saveWidget(plot, file = "./tmp_plot2.html")  # save plot
-# system(paste("firefox", "./tmp_plot2.html"))  # show plot
 
