@@ -8,7 +8,7 @@ source("library.r")
 
 
 # Import USGS water-use data
-source("wrangle-usgs.r")
+source("wrangle-usgs.r")  # defines `df_wtr_old`
 
 
 # Import FRED U.S. Census population data

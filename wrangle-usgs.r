@@ -53,7 +53,7 @@ df_wtr$year = as.numeric(df_wtr$year)
 df_wtr[["withdrawalSum"]] = df_wtr |>
   select(all_of(c(cols))) |>
   rowSums(na.rm=T)
-df_wtr$withdrawalSum = df_wtr$withdrawalSum*1000000  # convert column units to gal/day
+# df_wtr$withdrawalSum = df_wtr$withdrawalSum*1000000  # convert column units to gal/day
 
 
 # Import older USGS water-use data (1950-1980)
@@ -166,7 +166,7 @@ import_old_usgs_xlsx = function(path) {
   # Unpack sheets object and join all columns into one dataframe
   df = sheets[[1]]
   for (s in sheets[-1]) {
-    df = inner_join(df, s, by = "Area")
+    df = inner_join(df, s, by = c("Area", "state"))
   }
 
   # Add year column
@@ -175,12 +175,12 @@ import_old_usgs_xlsx = function(path) {
   return(df)
 }
 
-# Check for Rdata file
-rdata_path = paste0(dataDirUSGSOld, "/cache.Rdata")
-if (file.exists(rdata_path)) {
-  # Import data from Rdata file
-  load(rdata_path)
-} else {
+# Check for Rdata file [feature currently disabled]
+# rdata_path = paste0(dataDirUSGSOld, "/cache.Rdata")
+# if (file.exists(rdata_path)) {
+#   # Import data from Rdata file
+#   load(rdata_path)
+# } else {
   # Import data from original files
 
   # Run import function on all old USGS data xlsx files
@@ -199,17 +199,17 @@ if (file.exists(rdata_path)) {
     select(all_of(c(cols))) |>
     rowSums(na.rm=T)
   # Convert column units to gal/day
-  df_wtr_old$withdrawalSum = df_wtr_old$withdrawalSum*1000000
+  # df_wtr_old$withdrawalSum = df_wtr_old$withdrawalSum*1000000
 
   # Save to Rdata file
-  save(df_wtr_old, file = rdata_path)
-}
+  # save(df_wtr_old, file = rdata_path)
+# }
 
 
-# Subset and merge old and new USGS water-use data
-df_wtr_sum = bind_rows(
+# Subset and merge old and new USGS water-use data for Colorado
+df_wtr_sum_co = bind_rows(
   filter(df_wtr_old, Area == "08") |>  # USGS code 08 = Colorado
     select(year, withdrawalSum),
   select(df_wtr, year, withdrawalSum))
-df_wtr_sum = arrange(df_wtr_sum, year)  # sort by year, ascending
+df_wtr_sum_co = arrange(df_wtr_sum_co, year)  # sort by year, ascending
 
