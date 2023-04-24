@@ -18,25 +18,27 @@ dataDir = paste(HOME, "downloads/ess440/data", sep="/")
 tmp_dir_path = system("mktemp -d", intern=T)
 
 
-# Import current USGS water-use data (1980-2015)
+# Import current USGS water-use data (1985-2015)
 cols = c(
-  # TODO figure out why 1995 water-use is off the most from https://labs.waterdata.usgs.gov/visualizations/water-use/index.html
-  "Aquaculture total self-supplied withdrawals, fresh, in Mgal/d",
-  "Domestic total self-supplied withdrawals, fresh, in Mgal/d",
-  # "Hydroelectric Power offstream surface-water withdrawals, fresh, in Mgal/d",
-  "Industrial total self-supplied withdrawals, fresh, in Mgal/d",
-  "Irrigation, Total total self-supplied withdrawals, fresh, in Mgal/d",
-  "Livestock (Animal Specialties) total self-supplied withdrawals, fresh, in Mgal/d",
-  "Livestock (Stock) total self-supplied withdrawals, fresh, in Mgal/d",
-  "Livestock total self-supplied withdrawals, fresh, in Mgal/d",
-  "Mining total self-supplied withdrawals, fresh, in Mgal/d",
-  "Public Supply deliveries to commercial, in Mgal/d",
-  "Public Supply deliveries to domestic, in Mgal/d",
-  "Public Supply deliveries to industrial, in Mgal/d",
-  "Public Supply deliveries to thermoelectric, in Mgal/d",
-  "Public Supply total self-supplied withdrawals, fresh, in Mgal/d",
-  "Total Thermoelectric Power self-supplied groundwater withdrawals, fresh, in Mgal/d",
-  "Total Thermoelectric Power self-supplied surface-water withdrawals, fresh, in Mgal/d"
+  # Picked columns to match ones USGS picked to calculate total water use:
+  # see https://labs.waterdata.usgs.gov/visualizations/water-use/index.html
+  # and see https://github.com/USGS-VIZLAB/water-use/blob/main/scripts/process/wuClean.R
+  "Public.Supply.total.self.supplied.withdrawals..fresh..in.Mgal.d",
+  "Irrigation..Total.total.self.supplied.withdrawals..fresh..in.Mgal.d",
+
+  "Commercial.self.supplied.surface.water.withdrawals..fresh..in.Mgal.d",
+  "Commercial.self.supplied.groundwater.withdrawals..fresh..in.Mgal.d",
+
+  "Industrial.self.supplied.surface.water.withdrawals..fresh..in.Mgal.d",
+  "Industrial.self.supplied.groundwater.withdrawals..fresh..in.Mgal.d",
+
+  "Mining.self.supplied.surface.water.withdrawals..fresh..in.Mgal.d",
+  "Mining.self.supplied.groundwater.withdrawals..fresh..in.Mgal.d",
+
+  "Total.Thermoelectric.Power.total.self.supplied.withdrawals..fresh..in.Mgal.d",
+  "Fossil.fuel.Thermoelectric.Power.total.self.supplied.withdrawals..fresh..in.Mgal.d",
+  "Geothermal.Thermoelectric.Power.total.self.supplied.withdrawals..fresh..in.Mgal.d",
+  "Nuclear.Thermoelectric.Power.total.self.supplied.withdrawals..fresh..in.Mgal.d"
 )
 
 path = paste(dataDir, "USGS Water Use Data for Colorado state-wide.csv", sep='/')
