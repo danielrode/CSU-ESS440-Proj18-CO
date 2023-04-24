@@ -200,7 +200,19 @@ df_wtr_fresh_global =
   filter(Entity == "World")
 
 
-# Join USGS water use, Census (FRED) population, BEA GDP, and USDA cash crop
+# Import PRISM precipitation data
+source("wrangle-prism.r")  # defines `df_precip_co`
+df_precip_co_5year = df_precip_co
+df_precip_co_5year$precip_mm = zoo::rollmean(
+  df_precip_co$precip_mm, k = 5, fill = NA, align = "center")
+
+# Redefine `select` so it refers to dplyr::select and not the select imported
+# by `terra` package (which is imported by `wrangle-prism.r`)
+select = dplyr::select
+
+
+# Join USGS water use, Census (FRED) population, BEA GDP, USDA cash crop, and
+# PRISM precipitation data
 # for plotting; data is 5 year rolling average where applicable (population,
 # GDP and cash crop)
 df = inner_join(
@@ -227,6 +239,8 @@ df = inner_join(df,
     "year",
     "Population" = "population"),
   by = "year")
+
+df = inner_join(df, df_precip_co_5year, by = "year")
 
 
 # Join Our World in Data global population and freshwater use data for 
@@ -328,6 +342,7 @@ plot_x_vs_y(df, col, "Water Withdrawals (million gallons/day)")
 
 
 # Analyze Colorado cash crop metrics vs water use
+cat("Examining relationship between Colorado cash crop and water use...\n")
 pairs = list(
   c("GDP (million $/yr)", "Value of Ag. Sector Production (1,000 $/yr)"),
   c("GDP (million $/yr)", "Net Farm Income (1,000 $/yr)"),
@@ -400,4 +415,11 @@ plot =
 tmp_plot_path = paste0(tmp_dir_path, "/plotly_gdpvscc_plot.html")
 saveWidget(plot, file = tmp_plot_path)  # save plot
 system(paste("firefox", tmp_plot_path))  # show plot
+
+
+# Analyze Colorado precipitation vs water use
+cat(
+  "Examining relationship between Colorado precipitation and water use...\n")
+
+report(df, "Water Withdrawals (million gallons/day)", "precip_mm")
 
