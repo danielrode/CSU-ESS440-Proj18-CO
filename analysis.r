@@ -106,7 +106,7 @@ plot_wateruse_vs = function(df, y2, y2_label) {
   # Configure aesthetic
   plot = layout(
     plot,
-    font = list(size=18),
+    font = list(size=24),
     xaxis = list(
       title = "Year"
     ),
@@ -311,7 +311,7 @@ plot =
       yaxis = "y2",
       name = "Population") |>
     layout(
-      font = list(size=18),
+      font = list(size=24),
       xaxis = list(
         title = "Year"
       ),
@@ -409,7 +409,7 @@ plot =
       line = list(width = 5),
       name = "Net Farm Income (1,000 $/yr)") |>
     layout(
-      font = list(size=18),
+      font = list(size=24),
       xaxis = list(
         title = "Year"
       ),
