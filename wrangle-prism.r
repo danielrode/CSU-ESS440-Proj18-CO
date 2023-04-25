@@ -12,7 +12,7 @@ library(tidyverse)
 
 
 # Variables
-year_range = 1955:2015  # PRISM data years of interest
+year_range = 1953:2017  # PRISM data years of interest
 
 # The random number at the end is to reduce chances of path collision
 tmp_cache_path = "/tmp/prism_precip_data_12152.RData"

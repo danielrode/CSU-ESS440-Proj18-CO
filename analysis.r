@@ -211,10 +211,13 @@ df_precip_co_5year$precip_mm = zoo::rollmean(
 select = dplyr::select
 
 
-# Join USGS water use, Census (FRED) population, BEA GDP, USDA cash crop, and
-# PRISM precipitation data
-# for plotting; data is 5 year rolling average where applicable (population,
-# GDP and cash crop)
+# Join data for plotting:
+# - USGS water use
+# - Census (FRED) population
+# - BEA GDP
+# - USDA cash crop
+# - PRISM precipitation
+# (Data is 5 year rolling average where applicable.)
 df = inner_join(
   select(df_gdp_co_5year,
     "year",
@@ -240,7 +243,11 @@ df = inner_join(df,
     "Population" = "population"),
   by = "year")
 
-df = inner_join(df, df_precip_co_5year, by = "year")
+df = inner_join(df,
+  select(df_precip_co_5year,
+    "year",
+    "Precipitation (mm)" = "precip_mm"), 
+  by = "year")
 
 
 # Join Our World in Data global population and freshwater use data for 
@@ -418,8 +425,17 @@ system(paste("firefox", tmp_plot_path))  # show plot
 
 
 # Analyze Colorado precipitation vs water use
+col = "Precipitation (mm)"
 cat(
   "Examining relationship between Colorado precipitation and water use...\n")
 
-report(df, "Water Withdrawals (million gallons/day)", "precip_mm")
+df_reduced = head(df, nrow(df) - 1)  # exclude 2015 (outlier)
+report(df_reduced, "Water Withdrawals (million gallons/day)", col)
+
+# Plot - Visualize relationship between precipitation and water use
+plot_wateruse_vs(df,
+  list(col),
+  y2_label = col)
+
+plot_x_vs_y(df, col, "Water Withdrawals (million gallons/day)")
 
