@@ -89,7 +89,7 @@ plot_wateruse_vs = function(df, y2, y2_label) {
       category_color = "rgb(112,173,71)"
     } else if (i == "Value of Ag. Sector Production (1,000 $/yr)") {
       category_color = "rgb(190,144,37)"
-    } else if (i == "Population") {
+    } else if (i == "Population (ten thousands)") {
       category_color = plot_population_line_color
     }
 
@@ -241,7 +241,10 @@ df = inner_join(df,
   select(df_pop_co_5year,
     "year",
     "Population" = "population"),
-  by = "year")
+  by = "year") |>
+  mutate(
+    "Population (ten thousands)" = Population / 10000
+  )
 
 df = inner_join(df,
   select(df_precip_co_5year,
@@ -263,14 +266,15 @@ df_global = inner_join(
   ) |>
   mutate(
     "Freshwater Use (million gallons/day)" = 
-      `Freshwater Use (m^3)` * 264.2 / 1000000 / 365
+      `Freshwater Use (m^3)` * 264.2 / 1000000 / 365,
+    "Population (ten thousands)" = Population / 10000
   )
 
 
 # Analyze Colorado population vs water use
 cat("Examining relationship between Colorado population and water use...\n")
 
-col = "Population"
+col = "Population (ten thousands)"
 report(df, "Water Withdrawals (million gallons/day)", col)
 
 # Plot - Visualize relationship between population and water use
@@ -288,7 +292,8 @@ report(df_global, "Freshwater Use (million gallons/day)", "Population")
 
 # Plot - Visualize relationship between global population vs global freshwater
 # use
-plot_x_vs_y(df_global, "Population", "Freshwater Use (million gallons/day)")
+plot_x_vs_y(df_global, 
+  "Population (ten thousands)", "Freshwater Use (million gallons/day)")
 
 plot = 
   plot_ly(df_global) |>
@@ -300,7 +305,7 @@ plot =
       name = "Freshwater Use") |>
     add_trace(
       x = ~year,
-      y = ~Population,
+      y = ~`Population (ten thousands)`,
       type = "scatter", mode = "lines",
       line = list(width = 5, color = plot_population_line_color),
       yaxis = "y2",
@@ -316,7 +321,7 @@ plot =
       ),
       yaxis2 = list(
         tickformat=',d',  # full number: "14k" --> "14,000"
-        title = "Population",
+        title = "Population (ten thousands)",
         overlaying = "y",
         side = "right"
       ),
