@@ -178,7 +178,8 @@ source("wrangle-bea.r")  # defines `df_gdp_co_5year`
 
 
 # Import USDA cash crop data
-source("wrangle-usda.r")  # defines `df_usda_co_5year`
+source("wrangle-usda.r")  # defines `df_usda_co_5year` and `df_wtr` and 
+  # `df_wtr_old`
 
 
 # Import Census (FRED) population data
@@ -212,7 +213,7 @@ select = dplyr::select
 
 
 # Join data for plotting:
-# - USGS water use
+# - USGS water use and land use
 # - Census (FRED) population
 # - BEA GDP
 # - USDA cash crop
@@ -229,6 +230,19 @@ df = inner_join(
   mutate(
     "GDP (million $/yr)" = `gdpCurrentDollars` / 1000000
   )
+
+df = bind_rows(
+  select(df_wtr_old |> filter(state == "Colorado"),
+    "Irrigated Land (thousand acres)" =
+      "IR-IrTot;total irrigation, in thousand acres",
+    "year"),
+  select(df_wtr,
+    "Irrigated Land (thousand acres)" = 
+      "Irrigation..Total.surface.irrigation..in.thousand.acres",
+    "year") |>
+      mutate("Irrigated Land (thousand acres)" =
+        as.numeric(`Irrigated Land (thousand acres)`))
+  ) |> inner_join(df, by = "year")
 
 df = inner_join(df,
   select(df_usda_co_5year,
@@ -438,6 +452,23 @@ df_reduced = head(df, nrow(df) - 1)  # exclude 2015 (outlier)
 report(df_reduced, "Water Withdrawals (million gallons/day)", col)
 
 # Plot - Visualize relationship between precipitation and water use
+plot_wateruse_vs(df,
+  list(col),
+  y2_label = col)
+
+plot_x_vs_y(df, col, "Water Withdrawals (million gallons/day)")
+
+
+# Analyze Colorado irrigated land use vs water use
+# TODO
+col = "Irrigated Land (thousand acres)"
+cat(
+  "Examining relationship between Colorado irrigated land use and water",
+  "use...\n")
+
+report(df, "Water Withdrawals (million gallons/day)", col)
+
+# Plot - Visualize relationship between land use and water use
 plot_wateruse_vs(df,
   list(col),
   y2_label = col)
