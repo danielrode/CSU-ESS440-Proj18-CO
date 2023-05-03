@@ -6,7 +6,6 @@
 # Variables
 HOME = Sys.glob('~')
 dataDir = paste(HOME, "downloads/ess440/data", sep="/")
-tmp_dir_path = system("mktemp -d", intern=T)
 
 
 # Funcitons

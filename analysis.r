@@ -15,7 +15,6 @@
 
 library(tidyverse)
 library(plotly)
-library(htmlwidgets)
 library(trend)
 
 
@@ -27,6 +26,14 @@ source("library.r")
 plot_water_use_bar_color = "rgb(91,155,213)"
 # plot_water_use_bar_color = "lightskyblue"
 plot_population_line_color = "rgb(233,63,51)"
+plot_width = 1400
+plot_height = 1000
+plot_export_file_extension = ".png"
+plot_export_dir = "./export"
+
+
+# Create export dir for plots
+dir.create(plot_export_dir)
 
 
 # Import and subset USGS water use data
@@ -70,7 +77,7 @@ report = function(df, x, y) {
 
 plot_wateruse_vs = function(df, y2, y2_label) {
   plot = 
-    plot_ly(df) |>  # , width = 1200) |>
+    plot_ly(df) |>
       # Plot water use
       add_trace(
         x = ~year,
@@ -128,11 +135,15 @@ plot_wateruse_vs = function(df, y2, y2_label) {
       y = -0.16)  # fix legend position to prevent x-axis overlap
     )
 
-  # Show plot
+  # Export plot
   uniq_path_part = gsub("[^A-z]", "_", y2)
-  tmp_plot_path = paste0(tmp_dir_path, "/plotly-wtr-", uniq_path_part, ".html")
-  saveWidget(plot, file = tmp_plot_path)  # save plot
-  system(paste("firefox", tmp_plot_path))  # show plot
+  tmp_plot_path = paste0(
+    plot_export_dir, "/plotly-wtr-", uniq_path_part, plot_export_file_extension)
+  cat(paste("Exporting plot to", tmp_plot_path, '\n'))
+  plotly::save_image(
+    plot, file = tmp_plot_path,
+    width = plot_width, height = plot_height
+  )
 }
 
 plot_x_vs_y = function(df, x, y) {
@@ -165,11 +176,15 @@ plot_x_vs_y = function(df, x, y) {
         )
       )
 
-  # Show plot
+  # Export plot
   uniq_path_part = gsub("[^A-z]", "_", paste0(x, y))
-  tmp_plot_path = paste0(tmp_dir_path, "/plotly-", uniq_path_part, ".html")
-  saveWidget(plot, file = tmp_plot_path)  # save plot
-  system(paste("firefox", tmp_plot_path))  # show plot
+  tmp_plot_path = paste0(
+    plot_export_dir, "/plotly-wtr-", uniq_path_part, plot_export_file_extension)
+  cat(paste("Exporting plot to", tmp_plot_path, '\n'))
+  plotly::save_image(
+    plot, file = tmp_plot_path,
+    width = plot_width, height = plot_height
+  )
 }
 
 
@@ -206,10 +221,6 @@ source("wrangle-prism.r")  # defines `df_precip_co`
 df_precip_co_5year = df_precip_co
 df_precip_co_5year$precip_mm = zoo::rollmean(
   df_precip_co$precip_mm, k = 5, fill = NA, align = "center")
-
-# Redefine `select` so it refers to dplyr::select and not the select imported
-# by `terra` package (which is imported by `wrangle-prism.r`)
-select = dplyr::select
 
 
 # Join data for plotting:
@@ -347,10 +358,14 @@ plot =
         y = -0.16)  # fix legend position to prevent x-axis overlap
     )
 
-# Show plot
-tmp_plot_path = paste0(tmp_dir_path, "/plotly-global-pop-wtr.html")
-saveWidget(plot, file = tmp_plot_path)  # save plot
-system(paste("firefox", tmp_plot_path))  # show plot
+# Export plot
+tmp_plot_path = paste0(plot_export_dir, "/plotly-global-pop-wtr",
+  plot_export_file_extension)
+cat(paste("Exporting plot to", tmp_plot_path, '\n'))
+plotly::save_image(
+  plot, file = tmp_plot_path,
+  width = plot_width, height = plot_height
+)
 
 
 # Analyze Colorado GDP vs water use
@@ -403,7 +418,7 @@ plot_x_vs_y(df, col, "Water Withdrawals (million gallons/day)")
 
 # Plot - Visually inspect relationship between Colorado GDP and cash crops
 plot = 
-  plot_ly(df) |>  # , width = 1200) |>
+  plot_ly(df) |>
     add_trace(
       x = ~df[["year"]],
       y = ~`GDP (million $/yr)`,
@@ -438,9 +453,14 @@ plot =
         y = -0.16)  # fix legend position to prevent x-axis overlap
     )
 
-tmp_plot_path = paste0(tmp_dir_path, "/plotly_gdpvscc_plot.html")
-saveWidget(plot, file = tmp_plot_path)  # save plot
-system(paste("firefox", tmp_plot_path))  # show plot
+# Export plot
+tmp_plot_path = paste0(plot_export_dir, "/plotly_gdpvscc_plot",
+  plot_export_file_extension)
+cat(paste("Exporting plot to", tmp_plot_path, '\n'))
+plotly::save_image(
+  plot, file = tmp_plot_path,
+  width = plot_width, height = plot_height
+)
 
 
 # Analyze Colorado precipitation vs water use

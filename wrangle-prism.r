@@ -10,6 +10,10 @@ library(tigris)
 library(terra)
 library(tidyverse)
 
+# Redefine `select` so it refers to dplyr::select and not the select imported
+# by `terra` package
+select = dplyr::select
+
 
 # Variables
 year_range = 1953:2017  # PRISM data years of interest
